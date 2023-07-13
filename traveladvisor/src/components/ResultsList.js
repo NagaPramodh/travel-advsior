@@ -9,6 +9,8 @@ import {
   Grid,
 } from "@material-ui/core";
 import PlaceCard from "./PlaceCard";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 export default function ResultsList({
   type,
@@ -16,15 +18,19 @@ export default function ResultsList({
   isLoading,
   childClicked,
   places,
+  sliderValue,
+  sliderEvent,
 }) {
   const [elRefs, setElRefs] = useState([]);
   const classes = useStyles();
 
   useEffect(() => {
     setElRefs((refs) => {
-      return Array(places.length)
-        .fill()
-        .map((_, index) => refs[index] || createRef());
+      if (places.length > 0) {
+        return Array(places.length)
+          .fill()
+          .map((_, index) => refs[index] || createRef());
+      }
     });
   }, [places]);
 
@@ -48,19 +54,33 @@ export default function ResultsList({
               <MenuItem value="attractions"> Attractions</MenuItem>
             </Select>
           </FormControl>
+          <Slider
+            value={sliderValue}
+            onChange={sliderEvent}
+            step={1}
+            min={1}
+            max={5}
+            height={40}
+            style={{ width: "300px", height: 40 }}
+          />
+          Rating : {sliderValue}
           <Grid container spacing={3} className={classes.list}>
-            {places?.map((place, index) => {
-              return (
-                <Grid ref={elRefs[index]} key={index} item xs={12}>
-                  <PlaceCard
-                    selected={Number(childClicked) === index}
-                    placeRef={elRefs[index]}
-                    place={place}
-                    key={index}
-                  />
-                </Grid>
-              );
-            })}
+            {places.length > 0 ? (
+              places?.map((place, index) => {
+                return (
+                  <Grid ref={elRefs[index]} key={index} item xs={12}>
+                    <PlaceCard
+                      selected={Number(childClicked) === index}
+                      placeRef={elRefs[index]}
+                      place={place}
+                      key={index}
+                    />
+                  </Grid>
+                );
+              })
+            ) : (
+              <div style={{ marginTop: 30 }}>No results found</div>
+            )}
           </Grid>
         </div>
       )}

@@ -13,14 +13,13 @@ function App() {
   const [coords, setCoords] = useState({});
   const [bounds, setBounds] = useState(null);
   const [childClicked, setChildClicked] = useState(null);
+  const [value, setValue] = useState(5);
 
   const [isViewingFavorites, setIsViewingFavorites] = useState(false);
   const [favoritesList, setfavoritesList] = useState([]);
-  console.log(places, "places");
   // Get favorites from localStorage
   useEffect(() => {
     const savedFavs = localStorage.getItem("Favorites");
-    console.log(savedFavs, "savedFans");
     if (savedFavs) {
       const initialValue = JSON.parse(savedFavs);
       setfavoritesList(initialValue);
@@ -62,10 +61,23 @@ function App() {
       setIsLoading(true);
       getPlacesDetails(type, bounds?._northEast, bounds?._southWest)
         .then((data) => {
-          console.log(data);
-          setPlaces(
-            data?.filter((place) => place.name && place.num_reviews > 0)
-          );
+          if (value === 3) {
+            setPlaces(
+              data?.filter((place) => place.name && place.rating == 3.0)
+            );
+          } else if (value === 4) {
+            setPlaces(
+              data?.filter((place) => place.name && place.rating == 4.0)
+            );
+          } else if (value === 5) {
+            setPlaces(
+              data?.filter((place) => place.name && place.rating == 5.0)
+            );
+          } else {
+            setPlaces(
+              data?.filter((place) => place.name && place.num_reviews > 0)
+            );
+          }
           setIsLoading(false);
         })
         .catch((err) => {
@@ -73,7 +85,7 @@ function App() {
           setIsLoading(false);
         });
     }
-  }, [type, setPlaces, bounds]);
+  }, [type, bounds, value]);
 
   // Get coords from child
   useEffect(() => {
@@ -83,6 +95,10 @@ function App() {
       }
     );
   }, []);
+
+  const OnChangeEventTriggerd = (newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <div>
@@ -94,6 +110,15 @@ function App() {
       />
       <Grid container style={{ width: "100%", height: "100%" }}>
         <Grid item xs={12} md={3}>
+          {/* <Slider
+            value={value}
+            onChange={OnChangeEventTriggerd}
+            step={1}
+            min={1}
+            max={5}
+            style={{ width: "100px" }}
+          />
+          {value} */}
           <ResultsList
             type={type}
             setType={(type) => {
@@ -102,6 +127,8 @@ function App() {
             childClicked={childClicked}
             isLoading={isLoading}
             places={places}
+            sliderEvent={OnChangeEventTriggerd}
+            sliderValue={value}
           />
         </Grid>
         <Grid item xs={12} md={isViewingFavorites === false ? 9 : 6}>
