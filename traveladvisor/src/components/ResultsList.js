@@ -25,13 +25,13 @@ export default function ResultsList({
   const classes = useStyles();
 
   useEffect(() => {
-    setElRefs((refs) => {
-      if (places.length > 0) {
-        return Array(places.length)
+    if (places.length > 0) {
+      setElRefs((refs) =>
+        Array(places.length)
           .fill()
-          .map((_, index) => refs[index] || createRef());
-      }
-    });
+          .map((_, index) => refs[index] || createRef())
+      );
+    }
   }, [places]);
 
   return (
@@ -65,7 +65,7 @@ export default function ResultsList({
           />
           Rating : {sliderValue}
           <Grid container spacing={3} className={classes.list}>
-            {places.length > 0 ? (
+            {places.length > 0 && elRefs.length > 0 ? (
               places?.map((place, index) => {
                 return (
                   <Grid ref={elRefs[index]} key={index} item xs={12}>
